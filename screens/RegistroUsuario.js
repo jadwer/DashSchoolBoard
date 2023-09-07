@@ -1,41 +1,55 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 export default class RegistroUsuario extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: '',
-      pass: '',
-      confPass: ''
+      user: "",
+      pass: "",
+      confPass: "",
+    };
+  }
+
+  registerUser(user, pass, confPass){
+    user = user.trim().toLowerCase();
+
+    if (pass === confPass) {
+      const auth = getAuth();
+      createUserWithEmailAndPassword(auth, user, pass)
+        .then((userCredential) => {
+          const userData = userCredential.user;
+          console.log(`¡Usuario ${user} registrado correctamente!`);
+          this.props.navigation.navigate("Login");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
+    } else {
+      alert("Las contraseñas con coinciden, por favor, escríbelas nuevamente.");
     }
   }
 
-  registerUser(user, pass, confPass) {
-    const auth = getAuth();
-    createUserWithEmailAndPassword(auth, user, pass)
-      .then((userCredential) => {
-        const userData = userCredential.user;
-        console.log(`¡Usuario ${user} registrado correctamente!`);
-        this.props.navigation.navigate('Login');
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-      });
-  }
-
   render() {
+    const { user, pass, confPass } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Pantalla de Registro de Usuario</Text>
         <View>
           <TextInput
-          placeholder="nombre@correo.com"
-          onChangeText={(text) => {
-            this.setState({ user: text });
-          }}
+            autoFocus
+            placeholder="nombre@correo.com"
+            onChangeText={(text) => {
+              this.setState({ user: text });
+            }}
           />
           <TextInput
             placeholder="password"
@@ -48,10 +62,10 @@ export default class RegistroUsuario extends Component {
             placeholder="password"
             secureTextEntry
             onChangeText={(text) => {
-              this.setState({ confPassass: text });
+              this.setState({ confPass: text });
             }}
           />
-          <TouchableOpacity onPress={this.registerUser(this.state.user, this.state.pass, this.state.confPass)}>
+          <TouchableOpacity onPress={()=>{this.registerUser(user, pass, confPass)}}>
             <Text>Registrar</Text>
           </TouchableOpacity>
         </View>

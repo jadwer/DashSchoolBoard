@@ -37,7 +37,6 @@ export default class LogIn extends Component {
   };
 
   render() {
-    console.log(this.state.user)
     return (
       <View style={styles.container}>
         <Text style={styles.text}>Pantalla de Inicio de Sesión</Text>
